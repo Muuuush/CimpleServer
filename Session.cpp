@@ -10,15 +10,16 @@ Session::Session(Server* server)
     // std::cout << "Session " << boost::uuids::to_string(uuid) << " created" << std::endl;
 }
 
-void Session::start() {
-    data = new char[MAX_LENGTH]{};
-    this->socket.async_read_some(
-        buffer(this->data, MAX_LENGTH),
+void Session::startRecieving() {
+    auto node = std::make_shared<RecieveNode>();
+    async_read(
+        this->socket,
+        buffer(node->data, PacketNode::LENGTH_SECTION),
         std::bind(
-            &Session::HandleRecieve,
+            &Session::HandleHead,
             shared_from_this(),
             std::placeholders::_1,
-            std::placeholders::_2
+            node
         )
     );
 }
@@ -31,7 +32,30 @@ void Session::unregister() {
     server->sessions.erase(uuid);
 }
 
-void Session::HandleRecieve(std::shared_ptr<Session> session, const boost::system::error_code& ec, size_t recieve_lenth)
+void Session::HandleHead(std::shared_ptr<Session> session, const boost::system::error_code& ec, std::shared_ptr<RecieveNode> node) {
+    if (ec.failed()) {
+        if (ec == error::eof)
+            std::cout << "Connection closed by peer" << std::endl;
+        else
+            std::cerr << "[Error]: " << ec.what() << std::endl;
+        session->unregister();
+    } else {
+        node->totalLength = detail::socket_ops::network_to_host_short(*reinterpret_cast<uint16_t*>(node->data));
+        node->currLength = PacketNode::LENGTH_SECTION;
+        async_read(
+            session->socket,
+            buffer(node->data + node->currLength, node->totalLength - node->currLength),
+            std::bind(
+                &Session::HandleRecieve,
+                session,
+                std::placeholders::_1,
+                node
+            )
+        );
+    }
+}
+
+void Session::HandleRecieve(std::shared_ptr<Session> session, const boost::system::error_code& ec, std::shared_ptr<RecieveNode> node)
 {
     if (ec.failed()) {
         if (ec == error::eof)
@@ -40,16 +64,11 @@ void Session::HandleRecieve(std::shared_ptr<Session> session, const boost::syste
             std::cerr << "[Error]: " << ec.what() << std::endl;
         session->unregister();
     } else {
-        std::cout << "[Recieve]: " << std::string(session->data, recieve_lenth) << std::endl;
+        // node is recieved
+        // TODO: get handled
+        std::cout << "[Recieve]: " << string_view(node->data + PacketNode::LENGTH_SECTION, node->totalLength - PacketNode::LENGTH_SECTION) << std::endl;
 
-        session->socket.async_send(
-            buffer(session->data, recieve_lenth),
-            std::bind(
-                &Session::HandleSend,
-                session,
-                std::placeholders::_1
-            )
-        );
+        session->startRecieving();
     }
 }
 
@@ -58,15 +77,6 @@ void Session::HandleSend(std::shared_ptr<Session> session, const boost::system::
         std::cerr << "[Error]: " << ec.what() << std::endl;
         session->unregister();
     } else {
-        std::memset(session->data, 0, sizeof(char) * MAX_LENGTH);
-        session->socket.async_read_some(
-            buffer(session->data, MAX_LENGTH),
-            std::bind(
-                &Session::HandleRecieve,
-                session,
-                std::placeholders::_1,
-                std::placeholders::_2
-            )
-        );
+        // send seccuess
     }
 }

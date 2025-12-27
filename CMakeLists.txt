@@ -7,13 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project(cpp-web-learn)
 find_package(Boost 1.89 REQUIRED)
 
-add_executable(main ./main.cpp)
-
-add_executable(basicSocket ./basicSocket.cpp)
-
-add_executable(basicEchoServer ./basicEchoServer.cpp)
-add_executable(basicEchoClient ./basicEchoClient.cpp)
-
-add_executable(asyncEchoServer ./asyncEchoServer.cpp ./Server.cpp ./Session.cpp)
-
-target_link_libraries(main ${Boost_LIBARIES})
+add_executable(asyncEchoServer ./example/asyncEchoServer.cpp ./Server.cpp ./Session.cpp ./PacketNode.cpp)
+target_include_directories(asyncEchoServer PRIVATE ${CMAKE_SOURCE_DIR})
+add_executable(echoServerTestClient ./example/echoServerTestClient.cpp ./PacketNode.cpp)
+target_include_directories(echoServerTestClient PRIVATE ${CMAKE_SOURCE_DIR})

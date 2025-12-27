@@ -19,7 +19,7 @@ void Server::startAccept() {
         newSession->socket,
         [newSession, this](const boost::system::error_code& ec) {
             this->sessions.insert({newSession->uuid, newSession});
-            newSession->start();
+            newSession->startRecieving();
 
             startAccept();
         }
