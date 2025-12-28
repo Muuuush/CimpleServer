@@ -39,7 +39,7 @@ void Server::startAccept() {
         [newSession, this](const boost::system::error_code& ec) {
             this->sessions.insert({newSession->uuid, newSession});
             auto ep = newSession->getRemoteEndpoint();
-            spdlog::info("{} connected.", newSession->toString());
+            spdlog::debug("{} connected.", newSession->toString());
             newSession->startRecieving();
 
             startAccept();

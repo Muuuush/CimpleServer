@@ -15,8 +15,10 @@ public:
 public:
     static constexpr int TYPE_SECTION = sizeof(uint16_t);
     static constexpr int LENGTH_SECTION = sizeof(uint16_t);
+    static constexpr int HEADER_SECTION = TYPE_SECTION + LENGTH_SECTION;
     static constexpr uint16_t MAX_LENGTH = 0xffff;
-    static constexpr uint16_t MAX_DATA_LENGTH = MAX_LENGTH - (TYPE_SECTION + LENGTH_SECTION);
+    static constexpr uint16_t MAX_DATA_LENGTH = MAX_LENGTH - HEADER_SECTION;
+    std::string getMessage();
 public:
     char* data;
     uint16_t currLength;
@@ -25,7 +27,8 @@ public:
 
 class SendNode final : public PacketNode {
 public:
-    SendNode(uint16_t type, const char* data, uint16_t length) noexcept;
+    SendNode() noexcept = default;
+    SendNode(uint16_t type, const char* data, size_t length) noexcept;
     SendNode(uint16_t type, std::string_view data) noexcept;
 };
 

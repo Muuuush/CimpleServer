@@ -14,7 +14,7 @@ LogicSystem::LogicSystem(int capacity, int workerNum)
 void LogicSystem::worker() {
     while (true) {
         std::unique_lock lock(queueMutex);
-        if (fill <= 0)
+        while (fill <= 0 && !stop)
             full.wait(lock, [this]() { return fill > 0 || stop; });
         if (stop && fill <= 0) break; // stop
 
@@ -33,16 +33,17 @@ void LogicSystem::worker() {
                 spdlog::error("Unknown error, from {}", node.session->toString());
             }
         } else {
-            spdlog::error("Unknown type, from {}", node.session->toString());
+            spdlog::error("Unknown type: {}, from {}", node.type,node.session->toString());
         }
     }
 }
 
 void LogicSystem::registerNode(const LogicNode& node) {
-    if (stop) return; // if stop, don't recieve new node
+    if (stop) return; // if stop, don't receive new node
 
     std::unique_lock lock(queueMutex);
-    if (fill >= capacity) empty.wait(lock);
+    while (fill >= capacity)
+        empty.wait(lock);
     logicQueue[tail] = node;
     fill++;
     tail = (tail + 1) % capacity;

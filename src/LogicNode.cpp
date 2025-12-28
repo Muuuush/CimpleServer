@@ -7,7 +7,7 @@ LogicNode::LogicNode(std::shared_ptr<Session> session, uint16_t type, std::strin
 
 LogicNode::LogicNode(std::shared_ptr<Session> session, const RecieveNode& node) noexcept
     : session(session), type(boost::asio::detail::socket_ops::network_to_host_short(*reinterpret_cast<uint16_t*>(node.data))),
-    message(node.data + PacketNode::TYPE_SECTION + PacketNode::LENGTH_SECTION, node.totalLength - (PacketNode::TYPE_SECTION + PacketNode::LENGTH_SECTION)) {}
+    message(node.data + PacketNode::HEADER_SECTION, node.totalLength - (PacketNode::HEADER_SECTION)) {}
 
 LogicNode::LogicNode(LogicNode&& rvalue) noexcept
     : session(rvalue.session), type(rvalue.type), message(std::move(rvalue.message)) {}

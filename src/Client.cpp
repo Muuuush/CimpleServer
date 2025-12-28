@@ -12,14 +12,14 @@ void Client::connect(boost::asio::ip::tcp::endpoint serverEP, boost::system::err
     socket.connect(serverEP, ec);
 }
 
-void Client::sendPacket(SendNode node) {
+void Client::sendPacket(const SendNode& node) {
     write(
         socket,
         buffer(node.data, node.totalLength)
     );
 }
 
-void Client::sendPacket(SendNode node, boost::system::error_code& ec) {
+void Client::sendPacket(const SendNode& node, boost::system::error_code& ec) {
     write(
         socket,
         buffer(node.data, node.totalLength),
@@ -31,10 +31,10 @@ RecieveNode Client::recievePacket() {
     RecieveNode node;
     read(
         this->socket,
-        buffer(node.data, PacketNode::TYPE_SECTION + PacketNode::LENGTH_SECTION)
+        buffer(node.data, PacketNode::HEADER_SECTION)
     );
     node.totalLength = detail::socket_ops::network_to_host_short(*reinterpret_cast<uint16_t*>(node.data + PacketNode::TYPE_SECTION));
-    node.currLength = PacketNode::TYPE_SECTION + PacketNode::LENGTH_SECTION;
+    node.currLength = PacketNode::HEADER_SECTION;
     read(
         this->socket,
         buffer(node.data + node.currLength, node.totalLength - node.currLength)

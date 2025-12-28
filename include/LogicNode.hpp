@@ -16,7 +16,7 @@ public:
     LogicNode& operator=(const LogicNode& lvalue) noexcept = default;
     LogicNode& operator=(LogicNode&& rvalue) noexcept;
 
-private:
+public:
     std::shared_ptr<Session> session;
     uint16_t type;
     std::string message;

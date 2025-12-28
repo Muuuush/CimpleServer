@@ -40,18 +40,22 @@ PacketNode& PacketNode::operator=(PacketNode&& rvalue) noexcept {
     return *this;
 }
 
-SendNode::SendNode(uint16_t type, const char* data, uint16_t data_length) noexcept {
+std::string PacketNode::getMessage() {
+    return std::string(data + HEADER_SECTION, totalLength - HEADER_SECTION);
+}
+
+SendNode::SendNode(uint16_t type, const char* data, size_t data_length) noexcept {
     if (data_length > MAX_DATA_LENGTH) {
-        spdlog::warn("Node is too long to send. It will be turncated.");
+        spdlog::warn("Node is too long to send. It will be truncated.");
         data_length = MAX_DATA_LENGTH;
     }
 
-    this->data = new char[TYPE_SECTION + LENGTH_SECTION + data_length];
+    this->data = new char[HEADER_SECTION + data_length];
     this->currLength = 0;
-    this->totalLength = TYPE_SECTION + LENGTH_SECTION + data_length;
+    this->totalLength = HEADER_SECTION + data_length;
     *reinterpret_cast<uint16_t*>(this->data) = boost::asio::detail::socket_ops::host_to_network_short(type);
     *reinterpret_cast<uint16_t*>(this->data + TYPE_SECTION) = boost::asio::detail::socket_ops::host_to_network_short(totalLength);
-    std::memcpy(this->data + TYPE_SECTION + LENGTH_SECTION, data, data_length);
+    std::memcpy(this->data + HEADER_SECTION, data, data_length);
 }
 
 SendNode::SendNode(uint16_t type, std::string_view data) noexcept : SendNode(type, data.data(), data.length()) {}

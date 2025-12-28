@@ -85,6 +85,6 @@ void Session::HandleSend(std::shared_ptr<Session> session, const boost::system::
         spdlog::error("{}, from {}", ec.what(), session->toString());
         session->close();
     } else {
-        // send seccuessfully
+        // send successfully
     }
 }
