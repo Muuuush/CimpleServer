@@ -16,7 +16,7 @@ foreach(EXAMPLE_SOURCE ${EXAMPLE_SOURCES})
 
     add_executable(${EXECUTABLE_NAME} ${EXAMPLE_SOURCE})
 
-    target_link_libraries(${EXECUTABLE_NAME} PRIVATE cimpleServer)
+    target_link_libraries(${EXECUTABLE_NAME} PRIVATE CimpleServer)
 
     set_target_properties(${EXECUTABLE_NAME} PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
