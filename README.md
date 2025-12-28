@@ -37,10 +37,9 @@ int main() {
 
 ## Packet
 This framework uses TLV (Type-Lenth-Value) format packet.
-+---------+---------+------------------+
 |  Type   | Length  |      Value       |
+|:-------:|:-------:|:----------------:|
 | 2 Bytes | 2 Bytes | Max 65,531 Bytes |
-+---------+---------+------------------+
 The `type` of the packet will determine the callback function to be called in the server, via the hash map.
 
 ## Features
