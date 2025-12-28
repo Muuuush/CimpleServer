@@ -9,19 +9,25 @@ void sendHello(int helloCnt) {
     try {
         Client client;
         ip::tcp::endpoint serverEP(ip::make_address("127.0.0.1"), 10086);
-        client.connect(serverEP);
+        boost::system::error_code ec;
+        do
+            client.connect(serverEP, ec);
+        while (ec.failed());
         SendNode node(0, "Hello server!");
         while (helloCnt--) {
-            client.sendPacket(node);
+            do
+                client.sendPacket(node);
+            while (ec.failed());
             success++;
         }
-    } catch (...) {
+    } catch (const std::exception& e) {
+        std::cerr << "[Error]: " << e.what() << std::endl;
         return;
     }
 }
 int main() {
-    const int helloPerThread = 200;
-    const int threadCnt = 50;
+    const int helloPerThread = 500;
+    const int threadCnt = 200;
     std::vector<std::thread> threads;
     threads.reserve(threadCnt);
     for (int i = 0; i < threadCnt; i++)

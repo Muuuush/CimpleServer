@@ -8,7 +8,7 @@
 #include <unordered_map>
 
 class LogicSystem : public Singleton<LogicSystem> {
-    friend class Singleton<LogicSystem>;
+    friend Singleton<LogicSystem>;
 public:
     using callbackFunction = std::function<void(std::shared_ptr<Session> session, uint16_t type, std::string message)>;
 private:

@@ -6,18 +6,27 @@
 
 class Session;
 
+struct ServerSetting {
+    int backlog = boost::asio::socket_base::max_listen_connections;
+    int ioContextPoolSize = std::thread::hardware_concurrency();
+    int logicQueueCapacity = 1024;
+    int logicWorkerNum = 1;
+    ServerSetting() = default;
+};
+
 class Server {
     friend Session;
 public:
-    Server(unsigned short port, int logicQueueCapacity = 1024, int logicWorkerNum = 1);
+    Server(unsigned short port, ServerSetting setting = {});
     void start();
 private:
     void startAccept();
 
 private:
-    inline static int BACKLOG = 30;
     boost::asio::io_context ioc;
     const unsigned short port;
+    int backlog;
+    const int ioContextPoolSize;
     const int logicQueueCapacity;
     const int logicWorkerNum;
     boost::asio::ip::tcp::acceptor acceptor;

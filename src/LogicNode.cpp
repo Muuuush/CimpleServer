@@ -13,6 +13,7 @@ LogicNode::LogicNode(LogicNode&& rvalue) noexcept
     : session(rvalue.session), type(rvalue.type), message(std::move(rvalue.message)) {}
 
 LogicNode& LogicNode::operator=(LogicNode&& rvalue) noexcept {
+    if (&rvalue == this) return *this;
     this->session = rvalue.session;
     this->type = rvalue.type;
     this->message = std::move(rvalue.message);

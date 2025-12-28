@@ -1,4 +1,5 @@
 #include "LogicSystem.hpp"
+#include <spdlog/spdlog.h>
 #include <iostream>
 
 LogicSystem::LogicSystem(int capacity, int workerNum)
@@ -14,7 +15,7 @@ LogicSystem::LogicSystem(int capacity, int workerNum)
 void LogicSystem::worker() {
     while (true) {
         std::unique_lock lock(queueMutex);
-        while (fill <= 0)
+        if (fill <= 0)
             full.wait(lock, [this]() { return fill > 0 || stop; });
         if (stop && fill <= 0) break; // stop
 
@@ -42,7 +43,7 @@ void LogicSystem::registerNode(const LogicNode& node) {
     if (stop) return; // if stop, don't recieve new node
 
     std::unique_lock lock(queueMutex);
-    while (fill >= capacity) empty.wait(lock);
+    if (fill >= capacity) empty.wait(lock);
     logicQueue[tail] = node;
     fill++;
     tail = (tail + 1) % capacity;
@@ -54,4 +55,5 @@ LogicSystem::~LogicSystem() {
     full.notify_all();
     for (auto& worker : workers)
         worker.join();
+    std::cout << "[LOG]: Logic system stopped." << std::endl;
 }

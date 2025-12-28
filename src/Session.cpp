@@ -2,13 +2,15 @@
 
 #include "Server.hpp"
 #include "LogicSystem.hpp"
+#include "IOContextPool.hpp"
 #include <iostream>
 
 using namespace boost::asio;
 
 Session::Session(Server* server)
     : uuid(boost::uuids::random_generator()()),
-    server(server), socket(server->ioc) {}
+    server(server),
+    socket(IOContextPool::getInstance(server->ioContextPoolSize)->getIOContext()) {}
 
 Session::~Session() {}
 

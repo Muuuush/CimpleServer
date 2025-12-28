@@ -15,11 +15,28 @@ PacketNode::PacketNode(const PacketNode& other) noexcept {
     std::memcpy(data, other.data, totalLength);
 }
 
+PacketNode::PacketNode(PacketNode&& rvalue) noexcept {
+    currLength = rvalue.currLength;
+    totalLength = rvalue.totalLength;
+    data = rvalue.data;
+    rvalue.data = nullptr;
+}
+
 PacketNode& PacketNode::operator=(const PacketNode& other) noexcept {
+    if (&other == this) return *this;
     currLength = other.currLength;
     totalLength = other.totalLength;
     data = new char[totalLength];
     std::memcpy(data, other.data, totalLength);
+    return *this;
+}
+
+PacketNode& PacketNode::operator=(PacketNode&& rvalue) noexcept {
+    if (&rvalue == this) return *this;
+    currLength = rvalue.currLength;
+    totalLength = rvalue.totalLength;
+    data = rvalue.data;
+    rvalue.data = nullptr;
     return *this;
 }
 

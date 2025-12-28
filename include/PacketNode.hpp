@@ -8,7 +8,9 @@ public:
     ~PacketNode() noexcept;
     PacketNode() noexcept = default;
     PacketNode(const PacketNode& other) noexcept;
+    PacketNode(PacketNode&& rvalue) noexcept;
     PacketNode& operator=(const PacketNode& other) noexcept;
+    PacketNode& operator=(PacketNode&& rvalue) noexcept;
 
 public:
     static constexpr int TYPE_SECTION = sizeof(uint16_t);
