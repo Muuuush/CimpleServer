@@ -2,7 +2,7 @@
 
 #include <boost/asio.hpp>
 #include <cstring>
-#include <iostream>
+#include <spdlog/spdlog.h>
 
 PacketNode::~PacketNode() noexcept {
     delete data;
@@ -42,7 +42,7 @@ PacketNode& PacketNode::operator=(PacketNode&& rvalue) noexcept {
 
 SendNode::SendNode(uint16_t type, const char* data, uint16_t data_length) noexcept {
     if (data_length > MAX_DATA_LENGTH) {
-        std::cerr << "[WARN]: node is too long to send. It will be turncated.";
+        spdlog::warn("Node is too long to send. It will be turncated.");
         data_length = MAX_DATA_LENGTH;
     }
 

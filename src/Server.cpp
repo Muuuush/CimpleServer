@@ -3,7 +3,7 @@
 #include "Session.hpp"
 #include "LogicSystem.hpp"
 #include "IOContextPool.hpp"
-#include <iostream>
+#include <spdlog/spdlog.h>
 
 using namespace boost::asio;
 
@@ -14,7 +14,7 @@ Server::Server(unsigned short port, ServerSetting setting)
     acceptor(ioc, ip::tcp::endpoint(ip::tcp::v4(), port)) {}
 
 void Server::start() {
-    std::cout << "[LOG]: Server start at port: " << port << "." << std::endl;
+    spdlog::info("Server start at port: {}", port);
     acceptor.listen(backlog);
     boost::asio::signal_set signals(ioc, SIGINT, SIGTERM);
     auto stopServer = [this] {
@@ -27,7 +27,7 @@ void Server::start() {
         startAccept();
         ioc.run();
     } catch (const std::exception& e) {
-        std::cout << "[FATAL]: " << e.what() << std::endl;
+        spdlog::critical(e.what());
         stopServer();
     }
 }
@@ -39,7 +39,7 @@ void Server::startAccept() {
         [newSession, this](const boost::system::error_code& ec) {
             this->sessions.insert({newSession->uuid, newSession});
             auto ep = newSession->getRemoteEndpoint();
-            std::cout << "[LOG]: " << "Connected to " << newSession->toString() << "." << std::endl;
+            spdlog::info("{} connected.", newSession->toString());
             newSession->startRecieving();
 
             startAccept();

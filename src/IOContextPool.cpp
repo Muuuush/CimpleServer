@@ -1,6 +1,6 @@
 #include "IOContextPool.hpp"
 
-#include <iostream>
+#include <spdlog/spdlog.h>
 
 using namespace boost::asio;
 
@@ -30,5 +30,5 @@ IOContextPool::~IOContextPool() {
         ioc.stop();
     for (auto& thrd : threads)
         thrd.join();
-    std::cout << "[LOG]: IO context pool stopped." << std::endl;
+    spdlog::info("IO context pool stopped.");
 }

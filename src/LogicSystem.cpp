@@ -1,6 +1,5 @@
 #include "LogicSystem.hpp"
 #include <spdlog/spdlog.h>
-#include <iostream>
 
 LogicSystem::LogicSystem(int capacity, int workerNum)
     : logicQueue(capacity),
@@ -29,12 +28,12 @@ void LogicSystem::worker() {
             try {
                 callbacks[node.type](node.session, node.type, node.message);
             } catch (const std::exception& e) {
-                std::cerr << "[Error]: " << e.what() << ", from " << node.session->toString();
+                spdlog::error("{}, from {}", e.what(), node.session->toString());
             } catch (...) {
-                std::cerr << "[Unknown Error]: " << ", from " << node.session->toString();
+                spdlog::error("Unknown error, from {}", node.session->toString());
             }
         } else {
-            std::cerr << "[Unknown Type]: " << node.type << ", from " << node.session->toString();
+            spdlog::error("Unknown type, from {}", node.session->toString());
         }
     }
 }
@@ -55,5 +54,5 @@ LogicSystem::~LogicSystem() {
     full.notify_all();
     for (auto& worker : workers)
         worker.join();
-    std::cout << "[LOG]: Logic system stopped." << std::endl;
+    spdlog::info("Logic system stopped.");
 }

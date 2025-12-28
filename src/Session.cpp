@@ -3,7 +3,7 @@
 #include "Server.hpp"
 #include "LogicSystem.hpp"
 #include "IOContextPool.hpp"
-#include <iostream>
+#include <spdlog/spdlog.h>
 
 using namespace boost::asio;
 
@@ -47,9 +47,9 @@ void Session::close() {
 void Session::HandleHead(std::shared_ptr<Session> session, const boost::system::error_code& ec, std::shared_ptr<RecieveNode> node) {
     if (ec.failed()) {
         if (ec == error::eof)
-            std::cout << "[Log]: Connection closed by peer. " << session->toString() << std::endl;
+            spdlog::debug("Connection closed by peer. ({})", session->toString());
         else
-            std::cerr << "[Error]: " << ec.what() << ", from " << session->toString() << std::endl;
+            spdlog::error("{}, from {}", ec.what(), session->toString());
         session->close();
     } else {
         node->totalLength = detail::socket_ops::network_to_host_short(*reinterpret_cast<uint16_t*>(node->data + PacketNode::TYPE_SECTION));
@@ -70,9 +70,9 @@ void Session::HandleHead(std::shared_ptr<Session> session, const boost::system::
 void Session::HandleRecieve(std::shared_ptr<Session> session, const boost::system::error_code& ec, std::shared_ptr<RecieveNode> node) {
     if (ec.failed()) {
         if (ec == error::eof)
-            std::cout << "[Log]: Connection closed by peer. " << session->toString() << std::endl;
+            spdlog::debug("Connection closed by peer. ({})", session->toString());
         else
-            std::cerr << "[Error]: " << ec.what() << ", from " << session->toString() << std::endl;
+            spdlog::error("{}, from {}", ec.what(), session->toString());
         session->close();
     } else {
         LogicSystem::getInstance(session->server->logicQueueCapacity, session->server->logicWorkerNum)->registerNode(LogicNode(session, *node));
@@ -82,7 +82,7 @@ void Session::HandleRecieve(std::shared_ptr<Session> session, const boost::syste
 
 void Session::HandleSend(std::shared_ptr<Session> session, const boost::system::error_code& ec) {
     if (ec.failed()) {
-        std::cerr << "[Error]: " << ec.what() << ", from " << session->toString() << std::endl;
+        spdlog::error("{}, from {}", ec.what(), session->toString());
         session->close();
     } else {
         // send seccuessfully
