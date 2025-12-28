@@ -70,10 +70,10 @@ In the this framework, we provide a simple Client class to build a simple client
 However, all the network IO are synchronous, you can build customized client by any method you like, as long as you follow the TLV format packet we mention bellow.
 
 ## Examples
-- ![./example/echo]
-- ![./example/hello]
-- ![./example/many-greeting]
+- [Echo server and client](./example/echo)
+- [Hello server and client](./example/hello)
+- [Server stress testing and example of multi-threaded logic processing server](./example/many-greeting)
 
 ## Dependency
-- `Boost.Asio` is used for basic network IO.
-- `spdlog` is used for logging.
+- `Boost.Asio` (Boost Software License 1.0)
+- `spdlog` (MIT License)

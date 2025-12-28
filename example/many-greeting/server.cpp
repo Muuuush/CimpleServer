@@ -13,7 +13,9 @@ void recieveHi(std::shared_ptr<Session> session, uint16_t type, const std::strin
 }
 
 int main() {
-    Server server(10086);
+    ServerSetting setting;
+    setting.logicWorkerNum = 4;
+    Server server(10086, setting);
     std::unordered_map<uint16_t, LogicSystem::CallbackFunction> callbacks;
     callbacks.insert({0, recieveHello});
     callbacks.insert({1, recieveHi});
