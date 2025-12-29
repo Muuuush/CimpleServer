@@ -55,7 +55,7 @@ void Session::HandleHead(std::shared_ptr<Session> session, const boost::system::
         uint16_t tag = node->getTag();
 
         if (!LogicSystem::getCallbacks().contains(tag)) {
-            spdlog::error("Unknown type: {}, from {}", tag, session->toString());
+            spdlog::error("Unknown tag: {}, from {}", tag, session->toString());
             session->close();
         } else if (node->getLength() > node->MAX_LENGTH) {
             spdlog::warn("Length exceeding message from {}, the session will be closed.", ec.what(), session->toString());

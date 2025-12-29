@@ -3,10 +3,10 @@
 
 std::atomic_int helloCnt;
 std::atomic_int hiCnt;
-void recieveHello(std::shared_ptr<Session> session, uint16_t type, std::string_view message) {
+void recieveHello(std::shared_ptr<Session> session, uint16_t tag, std::string_view message) {
     helloCnt++;
 }
-void recieveHi(std::shared_ptr<Session> session, uint16_t type, std::string_view message) {
+void recieveHi(std::shared_ptr<Session> session, uint16_t tag, std::string_view message) {
     hiCnt++;
 }
 

@@ -37,7 +37,7 @@ void LogicSystem::worker() {
                 node.session->close();
             }
         } else {
-            spdlog::error("Unknown type: {}, from {}", node.getTag(), node.session->toString());
+            spdlog::error("Unknown tag: {}, from {}", node.getTag(), node.session->toString());
             node.session->close();
         }
     }

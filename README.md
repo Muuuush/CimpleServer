@@ -3,7 +3,7 @@ This is a simple but high performance framework of a TCP C++ server. Only need s
 
 ## Quick Start
 You need to set port when initialize the server, and set callback functions map before the server get started.
-When a new packet arrives the server, logic system will call the corresponding callback function according to its type.
+When a new packet arrives the server, logic system will call the corresponding callback function according to its tag.
 
 `LogicSystem::CallbackFunction` accepted 3 parameters
 1. `std::shared_ptr<Session> session`
@@ -12,19 +12,19 @@ When a new packet arrives the server, logic system will call the corresponding c
     - `getUUID()` get the UUID of the session.
     - `getRemoteEndpoint()` get the client endpoint of the session.
     - `toString()` get formatted string looks like "address:port [UUID]".
-2. `uint16_t type`
-    It is the type of the message. It should follow the protocol between server and client.
-3. `std::string message`
-    The message content. You can get it by constant reference to avoid copy.
+2. `uint16_t tag`
+    It is the tag of the message. It should follow the protocol between server and client.
+3. `std::string_view message`
+    The message content.
 
 A simple echo server example.
 ``` cpp
 #include "CimpleServer.hpp"
 #include <iostream>
 
-void echo(std::shared_ptr<Session> session, uint16_t type, const std::string& message) {
+void echo(std::shared_ptr<Session> session, uint16_t tag, std::string_view message) {
     std::cout << "Receive: \"" << message << "\" from " << session->getRemoteEndpoint() << std::endl;
-    session->send(TLVPacket(type, message));
+    session->send(TLVPacket(tag, message));
 }
 
 int main() {
@@ -38,13 +38,13 @@ int main() {
 ```
 
 ## Packet
-This framework uses TLV (Type-Lenth-Value) format packet.
+This framework uses TLV (Tag-Lenth-Value) format packet.
 
-|  Type   | Length  |      Value       |
+|   Tag   | Length  |      Value       |
 |:-------:|:-------:|:----------------:|
 | 2 Bytes | 2 Bytes | Max 65,531 Bytes |
 
-The `type` of the packet will determine the callback function to be called in the server, via the hash map.
+The `tag` of the packet will determine the callback function to be called in the server, via the hash map.
 
 ## Features
 - High-performance network I/O

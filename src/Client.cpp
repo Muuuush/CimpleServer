@@ -1,5 +1,4 @@
 #include "Client.hpp"
-#include <iostream>
 
 using namespace boost::asio;
 
